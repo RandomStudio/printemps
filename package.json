@@ -2,7 +2,7 @@
   "name": "pi-printemps",
   "version": "2.0.0",
   "description": "Get Raspberry Pi CPU+GPU temperatures",
-  "main": "dist/lib.js",
+  "main": "./dist/lib.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
