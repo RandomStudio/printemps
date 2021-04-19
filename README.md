@@ -1,14 +1,31 @@
-## What's in the box
+# Pi Printemps
 
-- [Typescript](https://www.typescriptlang.org/): tame the javascript
-- [Prettier](https://prettier.io/): stop fiddling with style
-- [rc](https://www.npmjs.com/package/rc) + [parse-strings-in-object](https://github.com/anselanza/parse-strings-in-object): make config predictable
-- [log4js](https://www.npmjs.com/package/log4js): timestamped logs with log levels
+Print the temps (temperature readings) for Raspberry Pi. Created in spring 2021, hence the pun.
 
-## Get started
+## Usage
 
-Make a new template from the repo:
+### Install
 
 ```
-npx degit https://github.com/anselanza/nodejs-template my-new-project
+npm i pi-printemps
+```
+
+Import as a module
+
+```
+import { getTemps } from "pi-printemps"
+```
+
+or using require
+
+```
+const { getTemps } = require("pi-printemps")
+```
+
+### Run async
+
+Simple example
+
+```
+const { gpu, cpu } = await getTemps();
 ```
