@@ -37,7 +37,7 @@ You can also run a simple script straight from the command-line (NodeJS must sti
 ### Install globally (optional)
 
 ```
-npm install -g printemps
+npm install -g pi-printemps
 ```
 
 then just run:
@@ -51,5 +51,5 @@ printemps
 Just run:
 
 ```
-npx printemps
+npx pi-printemps
 ```
