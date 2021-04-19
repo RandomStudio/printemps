@@ -1,8 +1,8 @@
 {
   "name": "pi-printemps",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Get Raspberry Pi CPU+GPU temperatures",
-  "main": "dist/index.js",
+  "main": "dist/lib.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
@@ -26,5 +26,8 @@
     "raspberry",
     "temperature"
   ],
-  "author": "Stephen Buchanan"
+  "author": "Stephen Buchanan",
+  "bin": {
+    "printemps": "./dist/cli.js"
+  }
 }
