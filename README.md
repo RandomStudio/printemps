@@ -2,7 +2,7 @@
 
 Print the temps (temperature readings) for Raspberry Pi. Created in spring 2021, hence the pun.
 
-## Usage
+## Usage in your project
 
 ### Install
 
@@ -28,4 +28,28 @@ Simple example
 
 ```
 const { gpu, cpu } = await getTemps();
+```
+
+## CLI tool
+
+You can also run a simple script straight from the command-line (NodeJS must still be installed on your system, of course):
+
+### Install globally (optional)
+
+```
+npm install -g printemps
+```
+
+then just run:
+
+```
+printemps
+```
+
+### Run using `npx` (no install needed!)
+
+Just run:
+
+```
+npx printemps
 ```
