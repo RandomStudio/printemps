@@ -1,8 +1,11 @@
+import util from "util";
+
 import defaults from "./defaults";
 import parse from "parse-strings-in-object";
 import rc from "rc";
 import { getLogger } from "log4js";
 import { exec } from "child_process";
+const execPromise = util.promisify(exec);
 
 const config: typeof defaults = parse(rc("printemps", defaults));
 
@@ -16,19 +19,27 @@ interface TempData {
   gpu: number;
 }
 
-export const getTemps = async (): Promise<TempData> =>
-  new Promise((resolve, reject) => {
-    exec("cat /sys/class/thermal/thermal_zone0/temp", (err, stdout, stderr) => {
-      const cpu = parseInt(stdout.trim()) / 1000.0;
+export const getTemps = async (): Promise<TempData> => {
+  let output = {};
 
-      exec("/opt/vc/bin/vcgencmd measure_temp", (err, stdout, stderr) => {
-        const gpu = parseFloat(
-          stdout.trim().replace("temp=", "").replace("'C", "")
-        );
-        const output = { cpu, gpu };
+  {
+    const { stdout, stderr } = await execPromise(
+      "cat /sys/class/thermal/thermal_zone0/temp"
+    );
+    const cpu = parseInt(stdout.toString().trim()) / 1000.0;
+    output = { ...output, cpu };
+  }
 
-        logger.info("printemps temperature readings:", output);
-        resolve(output);
-      });
-    });
-  });
+  {
+    const { stdout, stderr } = await execPromise(
+      "/opt/vc/bin/vcgencmd measure_temp"
+    );
+    const gpu = parseFloat(
+      stdout.toString().trim().replace("temp=", "").replace("'C", "")
+    );
+    output = { ...output, gpu };
+  }
+
+  logger.info("printemps temperature readings:", output);
+  return output as TempData;
+};
