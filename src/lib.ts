@@ -19,6 +19,11 @@ interface PiStats {
   gpu: number;
   armClockSpeedMhz: number;
   coreVolts: number;
+  throttled: {
+    rawResult: string;
+    isNominal: boolean;
+    hexValue: number;
+  };
 }
 
 export const getTemps = async (): Promise<PiStats> => {
@@ -26,8 +31,15 @@ export const getTemps = async (): Promise<PiStats> => {
   const gpu = await getGpuTemp();
   const armClockSpeedMhz = await getArmClockSpeedMhz();
   const coreVolts = await getCoreVolts();
+  const throttled = await getThrottled();
 
-  const output = { cpu, gpu, armClockSpeedMhz, coreVolts };
+  const output = {
+    cpu,
+    gpu,
+    armClockSpeedMhz,
+    coreVolts,
+    throttled: { ...throttled },
+  };
 
   logger.debug("printemps temperature readings:", output);
   return output;
@@ -61,4 +73,16 @@ const getCoreVolts = async (): Promise<number> => {
     "/opt/vc/bin/vcgencmd measure_volts core"
   );
   return parseFloat(stdout.trim().replace("volt=", "").replace("V", ""));
+};
+
+const getThrottled = async () => {
+  const { stdout, stderr } = await execPromise(
+    "/opt/vc/bin/vcgencmd get_throttled"
+  );
+  const hexValue = parseInt(stdout.trim().replace("throttled=", ""), 16);
+  return {
+    rawResult: stdout,
+    hexValue,
+    isNominal: hexValue === 0x0,
+  };
 };
