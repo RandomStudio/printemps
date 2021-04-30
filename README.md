@@ -2,6 +2,12 @@
 
 Print the temps (temperature readings) for Raspberry Pi. Created in spring 2021, hence the pun.
 
+Also prints out more stats:
+
+- Core voltage
+- ARM clock speed (normally 1500Mhz, i.e. 1.5Ghz)
+- Throttle state
+
 ## Usage in your project
 
 ### Install
