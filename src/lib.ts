@@ -14,16 +14,18 @@ logger.level = config.loglevel;
 
 logger.info("started with config", config);
 
-interface TempData {
+interface PiStats {
   cpu: number;
   gpu: number;
+  armClockSpeedMhz: number;
 }
 
-export const getTemps = async (): Promise<TempData> => {
+export const getTemps = async (): Promise<PiStats> => {
   const cpu = await getCpuTemp();
   const gpu = await getGpuTemp();
+  const armClockSpeedMhz = await getArmClockSpeedMhz();
 
-  const output = { cpu, gpu };
+  const output = { cpu, gpu, armClockSpeedMhz };
 
   logger.debug("printemps temperature readings:", output);
   return output;
@@ -43,4 +45,13 @@ const getGpuTemp = async (): Promise<number> => {
   );
   const gpu = parseFloat(stdout.trim().replace("temp=", "").replace("'C", ""));
   return gpu;
+};
+
+const getArmClockSpeedMhz = async (): Promise<number> => {
+  const { stdout, stderr } = await execPromise(
+    "/opt/vc/bin/vcgencmd measure_clock arm"
+  );
+  const clockSpeed =
+    parseFloat(stdout.trim().replace("frequency(48)=", "")) / Math.pow(10, 6);
+  return clockSpeed;
 };

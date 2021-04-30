@@ -2,6 +2,6 @@
 import { getTemps } from "./lib";
 
 (async () => {
-  const { gpu, cpu } = await getTemps();
-  console.log({ gpu, cpu });
+  const stats = await getTemps();
+  console.log({ ...stats });
 })();
