@@ -20,26 +20,27 @@ interface TempData {
 }
 
 export const getTemps = async (): Promise<TempData> => {
-  let output = {};
+  const cpu = await getCpuTemp();
+  const gpu = await getGpuTemp();
 
-  {
-    const { stdout, stderr } = await execPromise(
-      "cat /sys/class/thermal/thermal_zone0/temp"
-    );
-    const cpu = parseInt(stdout.toString().trim()) / 1000.0;
-    output = { ...output, cpu };
-  }
+  const output = { cpu, gpu };
 
-  {
-    const { stdout, stderr } = await execPromise(
-      "/opt/vc/bin/vcgencmd measure_temp"
-    );
-    const gpu = parseFloat(
-      stdout.toString().trim().replace("temp=", "").replace("'C", "")
-    );
-    output = { ...output, gpu };
-  }
+  logger.debug("printemps temperature readings:", output);
+  return output;
+};
 
-  logger.info("printemps temperature readings:", output);
-  return output as TempData;
+const getCpuTemp = async (): Promise<number> => {
+  const { stdout, stderr } = await execPromise(
+    "cat /sys/class/thermal/thermal_zone0/temp"
+  );
+  const cpu = parseInt(stdout.trim()) / 1000.0;
+  return cpu;
+};
+
+const getGpuTemp = async (): Promise<number> => {
+  const { stdout, stderr } = await execPromise(
+    "/opt/vc/bin/vcgencmd measure_temp"
+  );
+  const gpu = parseFloat(stdout.trim().replace("temp=", "").replace("'C", ""));
+  return gpu;
 };
