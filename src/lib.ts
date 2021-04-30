@@ -18,14 +18,16 @@ interface PiStats {
   cpu: number;
   gpu: number;
   armClockSpeedMhz: number;
+  coreVolts: number;
 }
 
 export const getTemps = async (): Promise<PiStats> => {
   const cpu = await getCpuTemp();
   const gpu = await getGpuTemp();
   const armClockSpeedMhz = await getArmClockSpeedMhz();
+  const coreVolts = await getCoreVolts();
 
-  const output = { cpu, gpu, armClockSpeedMhz };
+  const output = { cpu, gpu, armClockSpeedMhz, coreVolts };
 
   logger.debug("printemps temperature readings:", output);
   return output;
@@ -35,23 +37,28 @@ const getCpuTemp = async (): Promise<number> => {
   const { stdout, stderr } = await execPromise(
     "cat /sys/class/thermal/thermal_zone0/temp"
   );
-  const cpu = parseInt(stdout.trim()) / 1000.0;
-  return cpu;
+  return parseInt(stdout.trim()) / 1000.0;
 };
 
 const getGpuTemp = async (): Promise<number> => {
   const { stdout, stderr } = await execPromise(
     "/opt/vc/bin/vcgencmd measure_temp"
   );
-  const gpu = parseFloat(stdout.trim().replace("temp=", "").replace("'C", ""));
-  return gpu;
+  return parseFloat(stdout.trim().replace("temp=", "").replace("'C", ""));
 };
 
 const getArmClockSpeedMhz = async (): Promise<number> => {
   const { stdout, stderr } = await execPromise(
     "/opt/vc/bin/vcgencmd measure_clock arm"
   );
-  const clockSpeed =
-    parseFloat(stdout.trim().replace("frequency(48)=", "")) / Math.pow(10, 6);
-  return clockSpeed;
+  return (
+    parseFloat(stdout.trim().replace("frequency(48)=", "")) / Math.pow(10, 6)
+  );
+};
+
+const getCoreVolts = async (): Promise<number> => {
+  const { stdout, stderr } = await execPromise(
+    "/opt/vc/bin/vcgencmd measure_volts core"
+  );
+  return parseFloat(stdout.trim().replace("volt=", "").replace("V", ""));
 };
