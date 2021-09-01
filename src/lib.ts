@@ -18,6 +18,7 @@ interface PiStats {
   cpu: number;
   gpu: number;
   armClockSpeedMhz: number;
+  gpuClockSpeedMhz: number;
   coreVolts: number;
   throttled: {
     rawResult: string;
@@ -30,6 +31,7 @@ export const getTemps = async (): Promise<PiStats> => {
   const cpu = await getCpuTemp();
   const gpu = await getGpuTemp();
   const armClockSpeedMhz = await getArmClockSpeedMhz();
+  const gpuClockSpeedMhz = await getGpuClockSpeedMhz();
   const coreVolts = await getCoreVolts();
   const throttled = await getThrottled();
 
@@ -37,6 +39,7 @@ export const getTemps = async (): Promise<PiStats> => {
     cpu,
     gpu,
     armClockSpeedMhz,
+    gpuClockSpeedMhz,
     coreVolts,
     throttled: { ...throttled },
   };
@@ -60,7 +63,7 @@ const getGpuTemp = async (): Promise<number> => {
 };
 
 const getArmClockSpeedMhz = async (): Promise<number> => {
-  const { stdout, stderr } = await execPromise(
+  const { stdout} = await execPromise  (
     "/opt/vc/bin/vcgencmd measure_clock arm"
   );
   return (
@@ -74,6 +77,13 @@ const getCoreVolts = async (): Promise<number> => {
   );
   return parseFloat(stdout.trim().replace("volt=", "").replace("V", ""));
 };
+
+const getGpuClockSpeedMhz = async (): Promise<number> => {
+  const { stdout } = await execPromise(
+    "/opt/vc/bin/vcgencmd get_config int | grep gpu_freq="
+  )
+  return parseFloat(stdout.trim().replace("gpu_freq=", ""))
+}
 
 const getThrottled = async () => {
   const { stdout, stderr } = await execPromise(
