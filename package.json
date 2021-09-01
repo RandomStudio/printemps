@@ -1,6 +1,6 @@
 {
   "name": "pi-printemps",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Get Raspberry Pi CPU+GPU temperatures",
   "main": "./dist/lib.js",
   "scripts": {
